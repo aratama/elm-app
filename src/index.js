@@ -1,9 +1,19 @@
-import './main.css';
-import { Elm } from './Main.elm';
-import registerServiceWorker from './registerServiceWorker';
+import "./main.css";
+import { Elm } from "../src/Main.elm";
+//import registerServiceWorker from "./registerServiceWorker";
 
-Elm.Main.init({
-  node: document.getElementById('root')
+const count =
+  window.localStorage.getItem("count") === null
+    ? 42
+    : JSON.parse(window.localStorage.getItem("count"));
+
+const elm = Elm.Main.init({
+  node: document.getElementById("root"),
+  flags: { count: count }
 });
 
-registerServiceWorker();
+elm.ports.save.subscribe(json => {
+  window.localStorage.setItem("count", json.count);
+});
+
+//registerServiceWorker();

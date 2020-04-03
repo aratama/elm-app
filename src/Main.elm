@@ -1,74 +1,44 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+module Main exposing (main)
 
+import App.Model exposing (Model, Msg(..), State)
+import App.Port
+import App.Update
+import App.View
 import Browser
 import Browser.Navigation
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
+import Json.Decode
+import Json.Encode
 import Url
 
 
-
----- MODEL ----
-
-
-type alias Model =
-    { key : Browser.Navigation.Key }
-
-
-init : () -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-init () url key =
-    ( { key = key }, Cmd.none )
+init : State -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init flag url key =
+    ( { key = key
+      , state = flag
+      , errors = []
+      }
+    , Cmd.none
+    )
 
 
-
----- UPDATE ----
-
-
-type Msg
-    = UrlRequest Browser.UrlRequest
-    | UrlChange Url.Url
+encode : State -> Json.Decode.Value
+encode state =
+    Json.Encode.object [ ( "count", Json.Encode.int state.count ) ]
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        UrlRequest urlRequest ->
-            case urlRequest of
-                Browser.Internal url ->
-                    ( model, Browser.Navigation.pushUrl model.key (Url.toString url) )
-
-                Browser.External url ->
-                    ( model, Browser.Navigation.load url )
-
-        UrlChange url ->
-            ( model, Cmd.none )
-
-
-
----- VIEW ----
-
-
-view : Model -> Browser.Document Msg
-view model =
-    { title = ""
-    , body =
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
-        ]
-    }
-
-
-
----- PROGRAM ----
-
-
-main : Program () Model Msg
+main : Program State Model Msg
 main =
     Browser.application
-        { view = view
+        { view = App.View.view
         , init = init
-        , update = update
-        , subscriptions = always Sub.none
+        , update =
+            \msg model ->
+                case App.Update.update msg model of
+                    ( model_, cmd ) ->
+                        ( model_, Cmd.batch [ cmd, App.Port.save (encode model_.state) ] )
+        , subscriptions = \model -> App.Port.restore Restore
         , onUrlRequest = UrlRequest
         , onUrlChange = UrlChange
         }
