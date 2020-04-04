@@ -20,5 +20,6 @@ type alias Model =
 type Msg
     = UrlRequest Browser.UrlRequest
     | UrlChange Url.Url
-    | Increment
     | Restore Json.Decode.Value
+    | Increment
+    | Decrement

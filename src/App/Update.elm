@@ -4,7 +4,6 @@ import App.Model exposing (Model, Msg(..), State)
 import Browser
 import Browser.Navigation
 import Json.Decode
-import Json.Encode
 import Url
 
 
@@ -25,15 +24,8 @@ update msg model =
                 Browser.External url ->
                     ( model, Browser.Navigation.load url )
 
-        UrlChange url ->
+        UrlChange _ ->
             ( model, Cmd.none )
-
-        Increment ->
-            let
-                state =
-                    model.state
-            in
-            ( { model | state = { state | count = state.count + 1 } }, Cmd.none )
 
         Restore json ->
             case Json.Decode.decodeValue decoder json of
@@ -42,3 +34,17 @@ update msg model =
 
                 Ok decoded ->
                     ( { model | state = decoded }, Cmd.none )
+
+        Increment ->
+            let
+                state =
+                    model.state
+            in
+            ( { model | state = { state | count = state.count + 1 } }, Cmd.none )
+
+        Decrement ->
+            let
+                state =
+                    model.state
+            in
+            ( { model | state = { state | count = state.count - 1 } }, Cmd.none )
