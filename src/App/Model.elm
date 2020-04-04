@@ -6,6 +6,11 @@ import Json.Decode
 import Url
 
 
+type alias Assets =
+    { logo : String
+    }
+
+
 type alias State =
     { count : Int }
 
@@ -14,6 +19,7 @@ type alias Model =
     { key : Browser.Navigation.Key
     , state : State
     , errors : List String
+    , assets : Assets
     }
 
 

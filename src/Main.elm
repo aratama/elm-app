@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import App.Model exposing (Model, Msg(..), State)
+import App.Model exposing (Assets, Model, Msg(..), State)
 import App.Port
 import App.Update
 import App.View
@@ -11,11 +11,12 @@ import Json.Encode
 import Url
 
 
-init : State -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-init flag _ key =
+init : { state : State, assets : Assets } -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init { state, assets } _ key =
     ( { key = key
-      , state = flag
+      , state = state
       , errors = []
+      , assets = assets
       }
     , Cmd.none
     )
@@ -26,7 +27,7 @@ encode state =
     Json.Encode.object [ ( "count", Json.Encode.int state.count ) ]
 
 
-main : Program State Model Msg
+main : Program { state : State, assets : Assets } Model Msg
 main =
     Browser.application
         { view = App.View.view

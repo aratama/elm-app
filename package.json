@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "main": "parcel public/index.html"
+    "main": "parcel public/index.html",
+    "build": "parcel build public/index.html"
   },
   "devDependencies": {
+    "cssnano": "^4.1.10",
     "elm-hot": "^1.1.4",
     "node-elm-compiler": "^5.0.4"
   }
